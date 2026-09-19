@@ -5,6 +5,7 @@
   --primary: #7c3aed;
   --accent: #0f766e;
   --warn: #f59e0b;
+  --danger: #e11d48;
   --border: #dbe3ef;
 }
 
@@ -18,7 +19,9 @@ body {
 }
 
 button,
-input {
+input,
+select,
+textarea {
   font: inherit;
 }
 
@@ -31,15 +34,21 @@ button {
   cursor: pointer;
 }
 
+button:hover {
+  border-color: var(--primary);
+}
+
 .app-shell {
-  width: min(1180px, calc(100% - 32px));
+  width: min(1280px, calc(100% - 32px));
   margin: 0 auto;
   padding: 32px 0 48px;
 }
 
+/* ---------- 头部 ---------- */
+
 .hero {
   display: grid;
-  grid-template-columns: 1fr minmax(260px, 360px);
+  grid-template-columns: 1fr minmax(300px, 420px);
   gap: 24px;
   align-items: stretch;
   margin-bottom: 20px;
@@ -75,38 +84,46 @@ p {
 }
 
 h1 {
-  font-size: clamp(30px, 4vw, 48px);
+  font-size: clamp(30px, 4vw, 46px);
   line-height: 1.05;
   margin-bottom: 14px;
-  letter-spacing: 0;
 }
 
 .subtitle {
   color: #526070;
-  font-size: 17px;
-  line-height: 1.7;
-  max-width: 720px;
+  font-size: 15px;
+  line-height: 1.8;
+  max-width: 760px;
   margin-bottom: 0;
 }
 
 .stack-card {
   padding: 24px;
-  display: grid;
-  align-content: center;
-  gap: 10px;
 }
 
-.stack-card span,
-.metric-card span,
-label span {
+.stack-card > span {
   color: #64748b;
   font-size: 13px;
 }
 
-.stack-card strong {
-  font-size: 18px;
-  line-height: 1.5;
+.rules-list {
+  margin: 10px 0 0;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
 }
+
+.rules-list li {
+  font-size: 13px;
+  line-height: 1.5;
+  padding: 8px 10px;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--primary) 7%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--primary) 22%, #dbe3ef);
+}
+
+/* ---------- 指标 ---------- */
 
 .metrics-grid {
   display: grid;
@@ -118,8 +135,13 @@ label span {
 .metric-card {
   position: relative;
   padding: 20px;
-  min-height: 118px;
+  min-height: 108px;
   overflow: hidden;
+}
+
+.metric-card span {
+  color: #64748b;
+  font-size: 13px;
 }
 
 .metric-card strong {
@@ -146,43 +168,95 @@ label span {
 }
 
 .status-danger {
-  background: #e11d48;
+  background: var(--danger);
 }
 
-.workspace {
-  display: grid;
-  grid-template-columns: 290px 1fr;
-  gap: 20px;
+/* ---------- 冲突与通知 ---------- */
+
+.conflict-panel,
+.notice-panel {
+  border-radius: 8px;
+  padding: 18px 20px;
   margin-bottom: 20px;
+  border: 1px solid;
+}
+
+.conflict-panel {
+  background: #fff5f6;
+  border-color: color-mix(in srgb, var(--danger) 45%, #ffffff);
+  border-left: 6px solid var(--danger);
+}
+
+.notice-panel {
+  background: #f2faf8;
+  border-color: color-mix(in srgb, var(--accent) 40%, #ffffff);
+  border-left: 6px solid var(--accent);
+}
+
+.conflict-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.conflict-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 10px;
+  color: #526070;
+}
+
+.restriction-list {
+  margin: 0 0 10px;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 6px;
+}
+
+.restriction-list li {
+  background: color-mix(in srgb, var(--danger) 10%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--danger) 35%, #ffffff);
+  color: #9f1239;
+  font-weight: 600;
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 7px 10px;
+}
+
+.conflict-detail {
+  margin: 0;
+  color: #526070;
+  line-height: 1.7;
+}
+
+.notice-panel ul {
+  margin: 0;
+  padding-left: 20px;
+  color: #115e59;
+  line-height: 1.8;
+}
+
+/* ---------- 布局 ---------- */
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+  gap: 20px;
+  align-items: start;
+}
+
+.left-col {
+  display: grid;
+  gap: 20px;
 }
 
 .panel {
   padding: 22px;
-}
-
-.narrow h2 {
-  font-size: 17px;
-  margin-bottom: 12px;
-}
-
-.chips {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  margin-bottom: 24px;
-}
-
-.chips span,
-.chips button {
-  min-height: 34px;
-  border-radius: 999px;
-  padding: 7px 12px;
-  border: 1px solid color-mix(in srgb, var(--primary) 28%, #dbe3ef);
-  background: color-mix(in srgb, var(--primary) 8%, #ffffff);
-}
-
-.chips.muted button {
-  background: #ffffff;
 }
 
 .section-heading {
@@ -197,11 +271,318 @@ label span {
   margin-bottom: 0;
 }
 
-.primary-action {
-  background: var(--primary);
-  color: #ffffff;
-  border-color: var(--primary);
+.ledger-count {
+  color: #64748b;
+  font-size: 13px;
+  padding-top: 4px;
 }
+
+/* ---------- 台账表格 ---------- */
+
+.table-wrap {
+  overflow-x: auto;
+}
+
+.ledger-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.ledger-table th {
+  text-align: left;
+  color: #64748b;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--border);
+  white-space: nowrap;
+}
+
+.ledger-table td {
+  padding: 10px;
+  border-bottom: 1px solid #eef2f8;
+  vertical-align: middle;
+}
+
+.ledger-table tbody tr {
+  cursor: pointer;
+}
+
+.ledger-table tbody tr:hover {
+  background: #f8faff;
+}
+
+.ledger-table tbody tr.selected {
+  background: color-mix(in srgb, var(--primary) 8%, #ffffff);
+  box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.ledger-table .sub {
+  display: block;
+  color: #64748b;
+  font-size: 12px;
+  margin-top: 2px;
+}
+
+/* ---------- 徽章 ---------- */
+
+.badge {
+  display: inline-block;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.badge.risk-low {
+  background: color-mix(in srgb, var(--accent) 14%, #ffffff);
+  color: #0f766e;
+}
+
+.badge.risk-medium {
+  background: color-mix(in srgb, var(--warn) 18%, #ffffff);
+  color: #b45309;
+}
+
+.badge.risk-high {
+  background: color-mix(in srgb, var(--danger) 14%, #ffffff);
+  color: #be123c;
+}
+
+.badge.status-active {
+  background: color-mix(in srgb, var(--accent) 14%, #ffffff);
+  color: #0f766e;
+}
+
+.badge.status-closed {
+  background: #eef2f8;
+  color: #64748b;
+}
+
+.badge.status-pending {
+  background: color-mix(in srgb, var(--warn) 20%, #ffffff);
+  color: #b45309;
+}
+
+.consistency {
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.consistency.ok {
+  color: var(--accent);
+}
+
+.consistency.bad {
+  color: var(--danger);
+}
+
+/* ---------- 个案详情 ---------- */
+
+.case-detail {
+  display: grid;
+  gap: 4px;
+}
+
+.case-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: start;
+  gap: 16px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 16px;
+  margin-bottom: 8px;
+}
+
+.case-head h2 {
+  margin-bottom: 6px;
+}
+
+.case-head p {
+  margin-bottom: 0;
+}
+
+.case-meta {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.badge-stack {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.frozen-banner,
+.gate-banner {
+  border-radius: 6px;
+  padding: 10px 14px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 10px 0;
+}
+
+.frozen-banner {
+  background: #eef2f8;
+  border: 1px solid var(--border);
+  color: #475569;
+}
+
+.gate-banner {
+  background: color-mix(in srgb, var(--warn) 14%, #ffffff);
+  border: 1px solid color-mix(in srgb, var(--warn) 45%, #ffffff);
+  color: #92400e;
+}
+
+.detail-block {
+  border-top: 1px dashed var(--border);
+  padding-top: 14px;
+  margin-top: 10px;
+}
+
+.detail-block h3 {
+  font-size: 15px;
+  margin-bottom: 10px;
+}
+
+.block-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.block-head h3 {
+  margin-bottom: 0;
+}
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.chips span {
+  min-height: 32px;
+  border-radius: 999px;
+  padding: 6px 12px;
+  font-size: 13px;
+  border: 1px solid color-mix(in srgb, var(--primary) 28%, #dbe3ef);
+  background: color-mix(in srgb, var(--primary) 8%, #ffffff);
+}
+
+.empty-hint {
+  color: #94a3b8;
+  font-size: 13px;
+  margin-bottom: 0;
+}
+
+.rule-hint {
+  color: #64748b;
+  font-size: 12px;
+  margin-bottom: 10px;
+}
+
+/* ---------- 安全计划 ---------- */
+
+.safety-plan-view {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+  margin: 10px 0 0;
+}
+
+.safety-plan-view div {
+  background: #fbfdff;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px 12px;
+}
+
+.safety-plan-view dt {
+  color: #64748b;
+  font-size: 12px;
+  margin-bottom: 4px;
+}
+
+.safety-plan-view dd {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.safety-plan-form {
+  border: 1px dashed color-mix(in srgb, var(--danger) 45%, #dbe3ef);
+  border-radius: 8px;
+  padding: 14px;
+  margin: 14px 0 0;
+}
+
+.safety-plan-form legend {
+  font-size: 12px;
+  font-weight: 700;
+  color: #be123c;
+  padding: 0 6px;
+}
+
+/* ---------- 会谈卡片 ---------- */
+
+.session-card {
+  border: 1px solid var(--border);
+  border-left-width: 5px;
+  border-radius: 8px;
+  padding: 14px 16px;
+  margin-bottom: 12px;
+  background: #fbfdff;
+}
+
+.session-card.risk-border-low {
+  border-left-color: var(--accent);
+}
+
+.session-card.risk-border-medium {
+  border-left-color: var(--warn);
+}
+
+.session-card.risk-border-high {
+  border-left-color: var(--danger);
+}
+
+.session-card header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.session-card p {
+  margin-bottom: 6px;
+  font-size: 14px;
+  line-height: 1.7;
+  color: #334155;
+}
+
+.field-label {
+  color: #64748b;
+  font-size: 13px;
+}
+
+.confirm-note {
+  color: #0f766e !important;
+  font-size: 13px !important;
+}
+
+.confirm-form {
+  margin-top: 10px;
+}
+
+/* ---------- 表单 ---------- */
 
 .field-grid {
   display: grid;
@@ -209,65 +590,134 @@ label span {
   gap: 14px;
 }
 
+.span-2 {
+  grid-column: span 2;
+}
+
 label {
   display: grid;
   gap: 8px;
 }
 
-input {
+label span {
+  color: #64748b;
+  font-size: 13px;
+}
+
+input,
+select,
+textarea {
   width: 100%;
   min-height: 42px;
   border: 1px solid var(--border);
   border-radius: 6px;
   padding: 0 12px;
   color: #172033;
+  background: #ffffff;
 }
 
-.record-list {
-  display: grid;
-  gap: 12px;
-}
-
-.record-card {
-  display: grid;
-  grid-template-columns: 56px 1fr;
-  gap: 16px;
-  align-items: center;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 16px;
-  background: #fbfdff;
-}
-
-.record-index {
-  display: grid;
-  place-items: center;
-  width: 46px;
-  height: 46px;
-  border-radius: 8px;
-  color: #ffffff;
-  background: var(--primary);
-  font-weight: 800;
-}
-
-.record-card h3 {
-  margin-bottom: 6px;
-}
-
-.record-card p {
-  margin-bottom: 0;
-  color: #526070;
+textarea {
+  padding: 10px 12px;
+  resize: vertical;
   line-height: 1.6;
 }
 
-@media (max-width: 860px) {
+input.readonly {
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.form-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 14px;
+}
+
+.primary-action {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.danger-action {
+  background: var(--danger);
+  color: #ffffff;
+  border-color: var(--danger);
+}
+
+.text-btn {
+  border: none;
+  background: none;
+  color: var(--primary);
+  min-height: 0;
+  padding: 4px 8px;
+  font-weight: 600;
+}
+
+.inline-form {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 6px;
+}
+
+.inline-form input,
+.inline-form select {
+  width: auto;
+  flex: 1;
+  min-width: 160px;
+}
+
+.inline-form .field-grid {
+  flex: 1 1 100%;
+}
+
+/* ---------- 审计列表 ---------- */
+
+.audit-list {
+  margin: 0;
+  padding-left: 0;
+  list-style: none;
+  display: grid;
+  gap: 8px;
+}
+
+.audit-list li {
+  font-size: 13px;
+  line-height: 1.6;
+  color: #475569;
+  background: #f8fafc;
+  border: 1px solid #eef2f8;
+  border-radius: 6px;
+  padding: 8px 12px;
+}
+
+.audit-list.compact {
+  margin-top: 10px;
+}
+
+.audit-list.compact li {
+  font-size: 12px;
+  padding: 6px 10px;
+}
+
+/* ---------- 响应式 ---------- */
+
+@media (max-width: 980px) {
   .hero,
-  .workspace,
+  .layout,
   .metrics-grid {
     grid-template-columns: 1fr;
   }
 
-  .field-grid {
+  .field-grid,
+  .safety-plan-view {
     grid-template-columns: 1fr;
+  }
+
+  .span-2 {
+    grid-column: span 1;
   }
 }

@@ -1,158 +1,118 @@
+import { useMemo, useState } from "react";
 import "./styles.css";
-
-const project = {
-  "id": "hxwl-12",
-  "port": 5112,
-  "title": "心理咨询个案记录",
-  "subtitle": "会谈时间线、风险等级与干预目标记录",
-  "stack": "React + Vite + TypeScript + CSS",
-  "theme": [
-    "#7c3aed",
-    "#0f766e",
-    "#f59e0b"
-  ],
-  "domain": "心理咨询",
-  "users": [
-    "咨询师",
-    "督导",
-    "机构管理员"
-  ],
-  "metrics": [
-    "活跃个案",
-    "高风险关注",
-    "本周会谈",
-    "目标推进"
-  ],
-  "filters": [
-    "焦虑",
-    "亲密关系",
-    "亲子",
-    "职业压力"
-  ],
-  "fields": [
-    "来访者代号",
-    "咨询主题",
-    "会谈日期",
-    "主要困扰",
-    "情绪状态",
-    "干预方法",
-    "下次目标"
-  ],
-  "records": [
-    [
-      "C-042",
-      "焦虑",
-      "中风险",
-      "睡眠改善，练习呼吸放松"
-    ],
-    [
-      "C-119",
-      "亲密关系",
-      "稳定",
-      "识别沟通中的回避模式"
-    ],
-    [
-      "C-203",
-      "职业压力",
-      "关注",
-      "设定下周边界练习"
-    ]
-  ]
-};
-
-const statusColors = ["status-ok", "status-watch", "status-danger"];
-
-function MetricCard({ label, value, index }: { label: string; value: string; index: number }) {
-  return (
-    <article className="metric-card">
-      <span>{label}</span>
-      <strong>{value}</strong>
-      <i className={statusColors[index % statusColors.length]} />
-    </article>
-  );
-}
+import {
+  Conflict,
+  LedgerState,
+  Result,
+  RULES,
+  addCorrection,
+  addSession,
+  closeCase,
+  confirmSession,
+  registerCase,
+  reopenCase,
+  requestDowngrade,
+  upsertSafetyPlan,
+} from "./domain/ledger";
+import { seedState } from "./domain/seed";
+import { CaseDetail } from "./components/CaseDetail";
+import { ConflictPanel, NoticePanel } from "./components/ConflictPanel";
+import { LedgerTable } from "./components/LedgerTable";
+import { RegisterCaseForm } from "./components/RegisterCaseForm";
 
 function App() {
-  const values = project.metrics.map((metric: string, index: number) => {
-    const base = [84, 12, 31, 7][index % 4];
-    return String(base + index * 3);
-  });
+  const [state, setState] = useState<LedgerState>(seedState);
+  const [selectedId, setSelectedId] = useState<string>(seedState.cases[0]?.id ?? "");
+  const [conflict, setConflict] = useState<Conflict | null>(null);
+  const [notices, setNotices] = useState<string[]>([]);
+
+  /** 统一执行台账操作：成功入账 / 冲突展示（个案、日期、风险级别、命中的限制） */
+  const run = (r: Result<LedgerState>, afterOk?: (s: LedgerState) => void) => {
+    if (r.ok) {
+      setState(r.value);
+      setConflict(null);
+      setNotices(r.notices);
+      afterOk?.(r.value);
+    } else {
+      setConflict(r.conflict);
+      setNotices([]);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
+  const selected = state.cases.find((c) => c.id === selectedId) ?? state.cases[0] ?? null;
+
+  const metrics = useMemo(() => {
+    const active = state.cases.filter((c) => c.status === "active");
+    return [
+      { label: "在案个案", value: active.length, cls: "status-ok" },
+      { label: "高风险个案", value: active.filter((c) => c.riskLevel === "high").length, cls: "status-danger" },
+      {
+        label: "待督导确认",
+        value: state.cases.flatMap((c) => c.sessions).filter((s) => s.riskLevel === "high" && !s.confirmation).length,
+        cls: "status-watch",
+      },
+      { label: "已结案冻结", value: state.cases.filter((c) => c.status === "closed").length, cls: "status-ok" },
+    ];
+  }, [state]);
 
   return (
     <main className="app-shell">
       <section className="hero">
         <div>
-          <p className="eyebrow">{project.id} · port {project.port}</p>
-          <h1>{project.title}</h1>
-          <p className="subtitle">{project.subtitle}</p>
+          <p className="eyebrow">hxwl-12 · 心理咨询个案记录</p>
+          <h1>危机分级台账</h1>
+          <p className="subtitle">
+            按个案登记日期、风险级别与干预目标入账；高风险附安全计划，督导确认前下一次会谈不能落盘；
+            降级须连续两次低风险并写明依据；结案冻结后更正留痕，重开自动校验一致性。
+          </p>
         </div>
         <div className="stack-card">
-          <span>技术栈</span>
-          <strong>{project.stack}</strong>
+          <span>台账限制规则</span>
+          <ul className="rules-list">
+            {Object.values(RULES).map((r) => (
+              <li key={r}>{r}</li>
+            ))}
+          </ul>
         </div>
       </section>
 
       <section className="metrics-grid">
-        {project.metrics.map((metric: string, index: number) => (
-          <MetricCard key={metric} label={metric} value={values[index]} index={index} />
+        {metrics.map((m) => (
+          <article key={m.label} className="metric-card">
+            <span>{m.label}</span>
+            <strong>{m.value}</strong>
+            <i className={m.cls} />
+          </article>
         ))}
       </section>
 
-      <section className="workspace">
-        <aside className="panel narrow">
-          <h2>角色</h2>
-          <div className="chips">
-            {project.users.map((user: string) => (
-              <span key={user}>{user}</span>
-            ))}
-          </div>
-          <h2>筛选</h2>
-          <div className="chips muted">
-            {project.filters.map((filter: string) => (
-              <button key={filter}>{filter}</button>
-            ))}
-          </div>
-        </aside>
+      {conflict && <ConflictPanel conflict={conflict} onDismiss={() => setConflict(null)} />}
+      {notices.length > 0 && <NoticePanel notices={notices} onDismiss={() => setNotices([])} />}
 
-        <section className="panel">
-          <div className="section-heading">
-            <div>
-              <p>{project.domain}</p>
-              <h2>记录字段</h2>
-            </div>
-            <button className="primary-action">新增记录</button>
-          </div>
-          <div className="field-grid">
-            {project.fields.map((field: string) => (
-              <label key={field}>
-                <span>{field}</span>
-                <input placeholder={"填写" + field} />
-              </label>
-            ))}
-          </div>
-        </section>
-      </section>
+      <div className="layout">
+        <div className="left-col">
+          <LedgerTable cases={state.cases} selectedId={selected?.id ?? ""} onSelect={setSelectedId} />
+          <RegisterCaseForm
+            onRegister={(draft) =>
+              run(registerCase(state, draft), (s) => setSelectedId(s.cases[s.cases.length - 1].id))
+            }
+          />
+        </div>
 
-      <section className="records panel">
-        <div className="section-heading">
-          <div>
-            <p>示例数据</p>
-            <h2>近期记录</h2>
-          </div>
-          <button>导出摘要</button>
-        </div>
-        <div className="record-list">
-          {project.records.map((record: string[], index: number) => (
-            <article key={record.join("-")} className="record-card">
-              <div className="record-index">{String(index + 1).padStart(2, "0")}</div>
-              <div>
-                <h3>{record[0]}</h3>
-                <p>{record.slice(1).join(" · ")}</p>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
+        {selected && (
+          <CaseDetail
+            record={selected}
+            onAddSession={(draft) => run(addSession(state, selected.id, draft))}
+            onConfirm={(sessionId, supervisor, note) => run(confirmSession(state, selected.id, sessionId, supervisor, note))}
+            onDowngrade={(target, by) => run(requestDowngrade(state, selected.id, target, by))}
+            onClose={(reason, by) => run(closeCase(state, selected.id, reason, by))}
+            onReopen={(reason, by) => run(reopenCase(state, selected.id, reason, by))}
+            onCorrect={(draft) => run(addCorrection(state, selected.id, draft))}
+            onSafetyPlan={(plan, by) => run(upsertSafetyPlan(state, selected.id, plan, by))}
+          />
+        )}
+      </div>
     </main>
   );
 }
